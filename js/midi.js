@@ -6,7 +6,7 @@ var product = 'CNTRLR';
 //var product = 'OhmRGB'; 
 //var product = 'Base'; 
 //var product = 'Alias8'; 
-var products = ['-','Brain','Ohm64','block','Code','-','-','OhmRGB','CNTRLR','BrainV2','Alias8','Base','BrainJR','+','GuitarWing','DS1','+'];
+var products = ['-','Brain','Ohm64','block','Code','-','-','OhmRGB','CNTRLR','BrainV2','-','Alias8','Base','BrainJR','+','GuitarWing','DS1','+'];
 var leds = {};
 leds.Base = {};
 leds.Alias8 = {};
@@ -34,7 +34,8 @@ leds.Ohm64.xfade = [64,72]; //left & right
 leds.Ohm64.sliderbtns = [65,73,66,74,67,75,68,76]; //index left to right
 leds.Ohm64.fbtns = [69,70,71,77,78,79];//index top left to bottom right,in rows
 leds.Ohm64.livid = [87];
-color = {'white':1,'w':1,'cyan':4,'c':4,'mag':8,'magenta':8,'m':8,'red':16,'r':16,'blue':32,'b':32,'yellow':64,'yel':64,'y':64,'green':127,'g':127,'black':0,'b':0,'off':0};
+var color = {'white':1,'w':1,'cyan':4,'c':4,'mag':8,'magenta':8,'m':8,'red':16,'r':16,'blue':32,'b':32,'yellow':64,'yel':64,'y':64,'green':127,'g':127,'black':0,'off':0,'k':0};
+var monochrome = false;
 
 function clog(s){
   console.log(s+'\n');
@@ -52,6 +53,9 @@ function midiMessageReceived( ev ) {
      isLivid = true;
      var id = ev.data[10];
      product = products[id]; //turn product ID into a name like CNTRLR or Base
+     if(product==='Ohm64' || product==='Code' || product==='block'){
+      monochrome = true;
+     }
      clog('LIVID CONTROLLER MODEL: '+product+' (id '+id+')');
     }
     
@@ -75,7 +79,7 @@ function testnote() {
   clog("test out note 2")
   var noteOnMessage = [0x90, 2, 0x7f];    // note on, full velocity
   midiOut.send( noteOnMessage );  //omitting the timestamp means send immediately.
-  midiOut.send( [0x80, 60, 0x40], window.performance.now() + 4000.0 ); // Inlined array creation- note off, 
+  midiOut.send( [0x80, 2, 0x40], window.performance.now() + 4000.0 ); // Inlined array creation- note off, 
                                                                       // release velocity = 64, timestamp = now + 4 secs.
 }
 
@@ -116,7 +120,7 @@ function portInit(p){
 }
 
 function onMIDIStarted( midiAccess ) {
-  clog('start!');
+  clog('start midi!');
   var preferredIndex = -1;
   var list = [];
   var str = '';
@@ -175,14 +179,30 @@ function onMIDIStarted( midiAccess ) {
   }
 }
 
-function light(nn,c){
-  clog('light '+nn+' '+c);
-   midiOut.send( [0x90+CH, nn, color[c]] );
+//use time to blink
+function light(nn,c,time,offcolor){
+  var notemsg = [0x90+CH, nn, color[c]];
+  if(monochrome){
+    notemsg[2] = 127;
+  }
+  if(time){
+    //clog('blink light '+nn+' '+c+' '+color[c]+' time '+time);
+    midiOut.send( notemsg );  //omitting the timestamp means send immediately.
+    notemsg[2] = color[offcolor]; //change velocity to off color
+    if(monochrome){
+      notemsg[2] = 0;
+    }
+    midiOut.send( notemsg, window.performance.now() + time ); //note off
+  }else{
+    //clog('solid light '+nn+' '+c+' '+color[c]);
+    midiOut.send( notemsg );
+  }
 }
 function ring(cc,value){
   clog('ring '+cc+' '+value);
    midiOut.send( [0xB0+CH, cc, value] );
 }
+
 function onMIDISystemError( err ) {
   document.getElementById('synthbox').className = 'error';
   console.log( 'MIDI not initialized - error encountered:' + err.code );
@@ -190,8 +210,10 @@ function onMIDISystemError( err ) {
 
 //init: start up MIDI
 window.addEventListener('load', function() {   
-  if (navigator.requestMIDIAccess)
+  if (navigator.requestMIDIAccess){
     navigator.requestMIDIAccess( { sysex: true } ).then( onMIDIStarted, onMIDISystemError );
     //navigator.requestMIDIAccess(  ).then( onMIDIStarted, onMIDISystemError );
+    //initseq();
+  }
 
 });

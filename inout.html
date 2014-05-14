@@ -6,15 +6,30 @@
 	<title>Web MIDI Input Output</title>
     <script type="text/javascript" src="js/midi.js"></script>
     <script type="text/javascript" src="js/synth.js"></script>
+    <script type="text/javascript" src="js/seq.js"></script>
+    
+    <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
-  <div class="dropdownLabel">midi in</div>
-    <select class="dropdownSelect" id="midiIn">
-    </select>
-  <div class="dropdownLabel">midi out</div>
-    <select class="dropdownSelect" id="midiOut">
-    </select>
+  <div id="menus">
+  midi in: <select class="dropdownSelect" id="midiIn"></select> | 
+  midi out: <select class="dropdownSelect" id="midiOut"></select>
+  </div>
+  
+  <div id="buttons">
+    <button type="button" id="lightsrnd" onclick="lights_rnd()">Random Lights</button> | <button type="button" id="lightsoff" onclick="lights_off()">Lights Off</button> 
+  </div>
+  
+  <div id="feedback">
+    cc: <input type="text" id="ccnum" value="0"> val: <input type="text" id="ccval" value="0"><br>
+    note: <input type="text" id="notenum" value="0"> val: <input type="text" id="noteval" value="0">
+  </div>
+  
+  <div id="controls">
+      <button type="button" id="play" onclick="play()">Play/Pause</button> | 
+      Tempo: <span id="showTempo">120</span>BPM <input id="tempo" type="range" min="30.0" max="160.0" step="1" value="120" style="height: 20px; width: 200px" onInput="tempo = event.target.value; document.getElementById('showTempo').innerText=tempo;"> | 
+      Resolution:<select onchange="noteResolution = this.selectedIndex;"><option>16th notes<option>8th notes<option>Quarter notes</select>
   </div>
   
 </body>
