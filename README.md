@@ -7,10 +7,18 @@ There are some basic examples of lighting LEDs, getting MIDI data printed into t
 You may want to visit [the wiki](http://wiki.lividinstruments.com) that has technical data for Livid Controllers.
 There is also a chart of sysex messages in a [Google spreadsheet](https://docs.google.com/spreadsheet/ccc?key=0AsBJ5GihAJNadDZNb3pWT3hJU0ZURDdLNDFMdndnY0E&usp=drive_web#gid=0)
 
+<<<<<<< HEAD
 The Web MIDI flag MUST be enabled via chrome://flags/#enable-web-midi
 and make sure your Chrome is up to date via chrome://chrome/
 
 Adapted from Chris Wilson's Web Audio and Web MIDI examples:
+=======
+The Web MIDI flag must also be enabled via chrome://flags/#enable-web-midi
+
+Make sure your Chrome is up to date via chrome://chrome/
+
+Adapted from Chris Wilson's examples:
+>>>>>>> FETCH_HEAD
 [Drum Machine](http://webaudiodemos.appspot.com/MIDIDrums/index.html)
 [MIDI Synth](http://webaudiodemos.appspot.com/midi-synth/index.html)
 [Metronome](https://github.com/cwilso/metronome)
